@@ -19,9 +19,14 @@
 //   "playerId": "test@example.com",
 //   "action" : "startGame"
 // }
+
+
+// step 1) start game
 var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 var xhr = new XMLHttpRequest();
 var sessionId;
+var numberOfWordsToGuess;
+var numberOfGuessesAllowedForEachWord;
 
 function startGame(player = "tonyhoyinliu@gmail.com", action = "startGame") {
   xhr.open("POST", "https://strikingly-hangman.herokuapp.com/game/on", false);
@@ -31,7 +36,28 @@ function startGame(player = "tonyhoyinliu@gmail.com", action = "startGame") {
   // console.log(xhr.responseText);
   // console.log(JSON.parse(xhr.responseText));
   sessionId = JSON.parse(xhr.responseText).sessionId;
+  numberOfWordsToGuess = (JSON.parse(xhr.responseText).data.numberOfWordsToGuess);
+  numberOfGuessesAllowedForEachWord = (JSON.parse(xhr.responseText).data.numberOfGuessesAllowedForEachWord);
+
+  giveMeAWord();
 }
 
-
 startGame();
+
+// step 2) give me a word
+
+// Word Difficulty:
+// 1st to 20th word : length <= 5 letters
+// 21st to 40th word : length <= 8 letters
+// 41st to 60th word : length <= 12 letters
+// 61st to 80th word : length > 12 letters
+
+function giveMeAWord(action = "nextWord") {
+  xhr.open("POST", "https://strikingly-hangman.herokuapp.com/game/on", false);
+  xhr.send(JSON.stringify({sessionId: sessionId, action: action}));
+
+  console.log(JSON.parse(xhr.responseText));
+  // console.log(JSON.parse(xhr.responseText).data.word);
+}
+
+// step 3 )
