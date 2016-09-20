@@ -182,60 +182,62 @@ function giveMeAWord(action = "nextWord") {
 
   // console.log(JSON.parse(xhr.responseText));
   // console.log(JSON.parse(xhr.responseText).data.word);
-  makeGuess(JSON.parse(xhr.responseText)); // make a guess, pass down unguessed word
+  // setTimeout(makeGuess(JSON.parse(xhr.responseText), 200)); // make a guess, pass down unguessed word
+  makeGuess(JSON.parse(xhr.responseText));
 }
 
 // step 3) make a guess
 // ONE character per request, ONLY capital letters.
 
 function makeGuess(resp, action = "guessWord") {
+  // console.log(resp);
+  // console.log("answer is: " + answer);
+  if (resp.data.totalWordCount === 80) {
+    submitResult();
+    return;
+  }
+
   let answer = resp.data.word;
-  // let gameOver = false;
-  console.log("answer is: " + answer);
-  // while (!gameOver && numberOfWordsToGuess >= 0) {
-  //   while (!gameOver && answer.includes("*")) {
-  let idx = 0;
-  while (idx < 10 && answer.includes("*")) {
+  let idx = resp.data.wrongGuessCountOfCurrentWord;
+  while (idx < 10  && answer.includes("*")) {
     let nextGuess = search(answer, resp.data.totalWordCount);
     triedGuesses.push(nextGuess);
     xhr.open("POST", "https://strikingly-hangman.herokuapp.com/game/on", false);
-    console.log("current letter guess is: " + nextGuess);
+    // console.log("current letter guess is: " + nextGuess);
     xhr.send(JSON.stringify({sessionId: sessionId, action: action, guess: nextGuess}));
     console.log("xhr response after guess is: " + xhr.responseText);
-    // if (JSON.parse(xhr.responseText).message) {
-    //   console.log(getYourResult());
-      // break;
-      // gameOver = true;
-    // } else {
+    // console.log("xhr status is: " + xhr.status);
     answer = JSON.parse(xhr.responseText).data.word;
-    // }
     idx ++;
   }
 
-      // if (!answer.includes("*")) {
-      //   numberOfWordsToGuess -= 1;
-      //   giveMeAWord();
-      // }
-  //   }
-  // }
-  // console.log(counter);
-  getYourResult();
-  giveMeAWord();
+  setTimeout(function() {
+    getYourResult();
+    giveMeAWord();
+  }, 0);
 }
 
 // step 4) get your result
 
 function getYourResult(action = "getResult") {
   xhr.open("POST", "https://strikingly-hangman.herokuapp.com/game/on", false);
-  // console.log("session id is: " + sessionId);
   xhr.send(JSON.stringify({sessionId: sessionId, action: action}));
   console.log("xhr response is: " + xhr.responseText);
-  // console.log(xhr.responseText.data);
-  if (JSON.parse(xhr.responseText).data.score > bestScore) {
+  if (JSON.parse(xhr.responseText).data.score > 1000) {
+    // bestScore = JSON.parse(xhr.responseText).data.score;
+    // console.log("best score is: " + bestScore);
+    submitResult();
+  } else if (JSON.parse(xhr.responseText).data.score > bestScore) {
     bestScore = JSON.parse(xhr.responseText).data.score;
+    console.log("best score is: " + bestScore);
   }
-  console.log("best score is: " + bestScore);
 }
 
 
 // step 5) submit result
+
+function submitResult() {
+  xhr.open("POST", "https://strikingly-hangman.herokuapp.com/game/on", false);
+  xhr.send(JSON.stringify({sessionId: sessionId, action: "submitResult"}));
+  console.log(xhr.responseText);
+}
