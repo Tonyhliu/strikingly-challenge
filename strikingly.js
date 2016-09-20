@@ -44,12 +44,15 @@ function startGame(player = "tonyhoyinliu@gmail.com", action = "startGame") {
   giveMeAWord();
 }
 
-// startGame();
+startGame();
 
 function search(givenWord) {
   // var funWords = words.filter((word) => word.length <= 5);
   // let regex = /[A-C]/g;
+  let list = {};
   let regex = "";
+  let max = 0;
+  let guess = null;
   givenWord.split('').forEach(letter => {
     if (letter === "*") {
       regex += "[A-Z]";
@@ -59,17 +62,31 @@ function search(givenWord) {
   });
 
   regex = new RegExp(regex, "gi");
-  // console.log(regex);
 
-  // var funWords = words.filter((word) => word <= givenWord.length && word.match(regex));
   var funWords = words.filter((word) => {
     if (word.length <= givenWord.length && word.match(regex)) {
-      // console.log(word);
+      console.log(word);
+      word.split('').forEach(letter => {
+        if (list[letter]) {
+          list[letter] += 1;
+        } else {
+          list[letter] = 1;
+        }
+      });
     }
   });
+
+  Object.keys(list).forEach(key => {
+    if (!givenWord.includes(key) && list[key] > max) {
+      max = list[key];
+      guess = key;
+    }
+  });
+
+  return guess;
 }
 
-search("*b*se");
+// search("ab*s*");
 
 // step 2) give me a word
 
