@@ -28,6 +28,7 @@ var sessionId;
 var numberOfWordsToGuess;
 var numberOfGuessesAllowedForEachWord;
 var currentScore;
+var words = require('an-array-of-english-words');
 
 function startGame(player = "tonyhoyinliu@gmail.com", action = "startGame") {
   xhr.open("POST", "https://strikingly-hangman.herokuapp.com/game/on", false);
@@ -43,7 +44,15 @@ function startGame(player = "tonyhoyinliu@gmail.com", action = "startGame") {
   giveMeAWord();
 }
 
-startGame();
+// startGame();
+
+function testing() {
+  // var funWords = words.filter(function(w) { return !!w.match(/^fun/i); });
+  var funWords = words.filter((word) => word.length <= 5);
+  console.log(funWords);
+}
+
+testing();
 
 // step 2) give me a word
 
