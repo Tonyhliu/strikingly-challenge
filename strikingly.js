@@ -27,6 +27,7 @@ var xhr = new XMLHttpRequest();
 var sessionId;
 var numberOfWordsToGuess;
 var numberOfGuessesAllowedForEachWord;
+var currentScore;
 
 function startGame(player = "tonyhoyinliu@gmail.com", action = "startGame") {
   xhr.open("POST", "https://strikingly-hangman.herokuapp.com/game/on", false);
@@ -56,8 +57,54 @@ function giveMeAWord(action = "nextWord") {
   xhr.open("POST", "https://strikingly-hangman.herokuapp.com/game/on", false);
   xhr.send(JSON.stringify({sessionId: sessionId, action: action}));
 
-  console.log(JSON.parse(xhr.responseText));
+  // console.log(JSON.parse(xhr.responseText));
   // console.log(JSON.parse(xhr.responseText).data.word);
+  makeGuess(JSON.parse(xhr.responseText).data.word); // make a guess, pass down unguessed word
 }
 
-// step 3 )
+// step 3) make a guess
+// ONE character per request, ONLY capital letters.
+
+function makeGuess(word, idx = 0, action = "guessWord") {
+  getYourResult();
+  let answer = word;
+  console.log("answer is: " + answer);
+  let commonLetters = ["E", "S", "I", "A", "R",
+                        "N", "T", "O", "L", "C",
+                        "D", "U", "P", "M", "G",
+                        "H", "B", "Y", "F", "V",
+                        "K", "W", "Z", "X", "Q",
+                        "J"];
+  idx = idx;
+  while (numberOfWordsToGuess >= 0) {
+    while (answer.includes("*")) {
+      // if (answer.includes(commonLetters[idx])) {
+      //   idx += 1;
+      // }
+      console.log("index is: " + idx);
+      xhr.open("POST", "https://strikingly-hangman.herokuapp.com/game/on", false);
+      console.log("current letter guess is: " + commonLetters[idx]);
+      xhr.send(JSON.stringify({sessionId: sessionId, action: action, guess: commonLetters[idx]}));
+      console.log("xhr response after guess is: " + xhr.responseText);
+      answer = JSON.parse(xhr.responseText).data.word;
+      makeGuess(answer, idx += 1);
+    }
+
+    if (!answer.includes("*")) {
+      numberOfWordsToGuess -= 1;
+      giveMeAWord();
+    }
+  }
+}
+
+// step 4) get your result
+
+function getYourResult(action = "getResult") {
+  xhr.open("POST", "https://strikingly-hangman.herokuapp.com/game/on", false);
+  // console.log("session id is: " + sessionId);
+  xhr.send(JSON.stringify({sessionId: sessionId, action: action}));
+  console.log("xhr response is: " + xhr.responseText);
+}
+
+
+// step 5) submit result
