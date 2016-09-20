@@ -27,8 +27,8 @@ var xhr = new XMLHttpRequest();
 var sessionId;
 var numberOfWordsToGuess;
 var numberOfGuessesAllowedForEachWord;
-var currentScore;
-var words = require('an-array-of-english-words');
+var bestScore = 0;
+// var words = require('an-array-of-english-words');
 var triedGuesses = [];
 var file1 = 'file:///Users/TONY/Desktop/strikingly-hangman/sh.txt';
 var file2 = 'file:///Users/TONY/Desktop/strikingly-hangman/sh1.txt';
@@ -50,7 +50,7 @@ function startGame(player = "tonyhoyinliu@gmail.com", action = "startGame") {
   giveMeAWord();
 }
 
-// startGame();
+startGame();
 
 function readTextFile(fileName) {
   var rawFile = new XMLHttpRequest();
@@ -69,7 +69,7 @@ function readTextFile(fileName) {
 
 // console.log(readTextFile(file1));
 
-function search(givenWord) {
+function search(givenWord, wordCount) {
   // var funWords = words.filter((word) => word.length <= 5);
   // let regex = /[A-C]/g;
   let list = {};
@@ -77,6 +77,7 @@ function search(givenWord) {
   var funWords;
   let max = 0;
   let guess = null;
+
   givenWord.split('').forEach(letter => {
     if (letter === "*") {
       regex += "[A-Z]";
@@ -99,7 +100,7 @@ function search(givenWord) {
         });
       }
     });
-  } else if (givenWord.length <= 5) {
+  } else if (wordCount <= 20) {
     funWords = readTextFile(file2).filter((word) => {
       if (word.length <= givenWord.length && word.match(regex)) {
         word.split('').forEach(letter => {
@@ -111,7 +112,7 @@ function search(givenWord) {
         });
       }
     });
-  } else if (givenWord.length <= 8) {
+  } else if (wordCount <= 40) {
     funWords = readTextFile(file3).filter((word) => {
       if (word.length <= givenWord.length && word.match(regex)) {
         word.split('').forEach(letter => {
@@ -123,7 +124,7 @@ function search(givenWord) {
         });
       }
     });
-  } else if (givenWord.length <= 12) {
+  } else if (wordCount <= 60) {
     funWords = readTextFile(file4).filter((word) => {
       if (word.length <= givenWord.length && word.match(regex)) {
         word.split('').forEach(letter => {
@@ -156,7 +157,7 @@ function search(givenWord) {
     }
   });
 
-  console.log("most common letter is: " + guess);
+  // console.log("most common letter is: " + guess);
   // console.log(list);
   // makeGuess(word, "guessWord", guess);
   return guess;
@@ -195,7 +196,7 @@ function makeGuess(resp, action = "guessWord") {
   //   while (!gameOver && answer.includes("*")) {
   let idx = 0;
   while (idx < 10 && answer.includes("*")) {
-    let nextGuess = search(answer);
+    let nextGuess = search(answer, resp.data.totalWordCount);
     triedGuesses.push(nextGuess);
     xhr.open("POST", "https://strikingly-hangman.herokuapp.com/game/on", false);
     console.log("current letter guess is: " + nextGuess);
@@ -229,6 +230,11 @@ function getYourResult(action = "getResult") {
   // console.log("session id is: " + sessionId);
   xhr.send(JSON.stringify({sessionId: sessionId, action: action}));
   console.log("xhr response is: " + xhr.responseText);
+  // console.log(xhr.responseText.data);
+  if (JSON.parse(xhr.responseText).data.score > bestScore) {
+    bestScore = JSON.parse(xhr.responseText).data.score;
+  }
+  console.log("best score is: " + bestScore);
 }
 
 
