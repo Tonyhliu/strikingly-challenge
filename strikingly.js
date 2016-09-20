@@ -69,12 +69,12 @@ function makeGuess(word, idx = 0, action = "guessWord") {
   getYourResult();
   let answer = word;
   console.log("answer is: " + answer);
-  let commonLetters = ["E", "S", "I", "A", "R",
-                        "N", "T", "O", "L", "C",
-                        "D", "U", "P", "M", "G",
-                        "H", "B", "Y", "F", "V",
-                        "K", "W", "Z", "X", "Q",
-                        "J"];
+  // let commonLetters = ["E", "S", "I", "A", "R",
+  //                       "N", "T", "O", "L", "C",
+  //                       "D", "U", "P", "M", "G",
+  //                       "H", "B", "Y", "F", "V",
+  //                       "K", "W", "Z", "X", "Q",
+  //                       "J"];
   idx = idx;
   while (numberOfWordsToGuess >= 0) {
     while (answer.includes("*")) {
