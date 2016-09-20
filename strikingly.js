@@ -46,13 +46,30 @@ function startGame(player = "tonyhoyinliu@gmail.com", action = "startGame") {
 
 // startGame();
 
-function testing() {
-  // var funWords = words.filter(function(w) { return !!w.match(/^fun/i); });
-  var funWords = words.filter((word) => word.length <= 5);
-  console.log(funWords);
+function search(givenWord) {
+  // var funWords = words.filter((word) => word.length <= 5);
+  // let regex = /[A-C]/g;
+  let regex = "";
+  givenWord.split('').forEach(letter => {
+    if (letter === "*") {
+      regex += "[A-Z]";
+    } else {
+      regex += letter;
+    }
+  });
+
+  regex = new RegExp(regex, "gi");
+  // console.log(regex);
+
+  // var funWords = words.filter((word) => word <= givenWord.length && word.match(regex));
+  var funWords = words.filter((word) => {
+    if (word.length <= givenWord.length && word.match(regex)) {
+      // console.log(word);
+    }
+  });
 }
 
-testing();
+search("*b*se");
 
 // step 2) give me a word
 
@@ -96,6 +113,7 @@ function makeGuess(word, idx = 0, action = "guessWord") {
       xhr.send(JSON.stringify({sessionId: sessionId, action: action, guess: commonLetters[idx]}));
       console.log("xhr response after guess is: " + xhr.responseText);
       answer = JSON.parse(xhr.responseText).data.word;
+
       makeGuess(answer, idx += 1);
     }
 
