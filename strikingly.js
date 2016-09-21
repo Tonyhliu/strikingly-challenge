@@ -28,7 +28,6 @@ var sessionId;
 var numberOfWordsToGuess;
 var numberOfGuessesAllowedForEachWord;
 var bestScore = 0;
-// var words = require('an-array-of-english-words');
 var triedGuesses = [];
 var file1 = 'file:///Users/TONY/Desktop/strikingly-hangman/sh.txt';
 var file2 = 'file:///Users/TONY/Desktop/strikingly-hangman/sh1.txt';
@@ -190,10 +189,10 @@ function giveMeAWord(action = "nextWord") {
 // ONE character per request, ONLY capital letters.
 
 function makeGuess(resp, action = "guessWord") {
-  // console.log(resp);
-  // console.log("answer is: " + answer);
   if (resp.data.totalWordCount === 80) {
-    submitResult();
+    if (resp.data.score > 681) {
+      submitResult();
+    }
     return;
   }
 
